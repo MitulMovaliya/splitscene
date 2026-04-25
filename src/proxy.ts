@@ -33,7 +33,7 @@ export async function proxy(request: NextRequest) {
 
   if (!isAuthenticated && isVerificationPage) {
     const redirectUrl = new URL("/signin", request.url);
-    redirectUrl.searchParams.set("next", pathname);
+    redirectUrl.searchParams.set("next", pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);
   }
 
