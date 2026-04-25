@@ -53,3 +53,44 @@ export function buildOtpEmailTemplate({
     html,
   };
 }
+
+type BuildResetPasswordEmailTemplateInput = {
+  resetUrl: string;
+  name?: string | null;
+  appName?: string;
+};
+
+export function buildResetPasswordEmailTemplate({
+  resetUrl,
+  name,
+  appName = "SplitScene",
+}: BuildResetPasswordEmailTemplateInput) {
+  const greeting = name?.trim() ? `Hi ${name.trim()},` : "Hi,";
+  const title = "Reset your password";
+  const subject = `${appName}: ${title}`;
+
+  const text = `${greeting}\n\nWe received a request to reset your password. Use this link to continue:\n${resetUrl}\n\nIf you did not request this, you can safely ignore this email.`;
+
+  const html = `
+    <div style="background:#f7fafc;padding:24px;font-family:Arial,Helvetica,sans-serif;color:#0f172a;">
+      <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;">
+        <p style="margin:0 0 8px 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#0e7490;font-weight:700;">${appName}</p>
+        <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;">${title}</h1>
+        <p style="margin:0 0 12px 0;font-size:14px;line-height:1.6;color:#334155;">${greeting}</p>
+        <p style="margin:0 0 16px 0;font-size:14px;line-height:1.6;color:#334155;">We received a request to reset your password. Click below to continue.</p>
+        <p style="margin:0 0 16px 0;">
+          <a href="${resetUrl}" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#0e7490;color:#ffffff;text-decoration:none;font-weight:700;">Reset password</a>
+        </p>
+        <p style="margin:0 0 8px 0;font-size:13px;line-height:1.6;color:#64748b;word-break:break-word;">If the button does not work, copy and paste this URL into your browser:</p>
+        <p style="margin:0 0 12px 0;font-size:13px;line-height:1.6;color:#155e75;word-break:break-word;">${resetUrl}</p>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#64748b;">If you did not request this, you can safely ignore this email.</p>
+      </div>
+    </div>
+  `;
+
+  return {
+    subject,
+    text,
+    html,
+  };
+}
