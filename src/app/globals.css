@@ -105,7 +105,6 @@
   --tracking-normal: var(--tracking-normal);
   --spacing: var(--spacing);
   --letter-spacing: var(--letter-spacing);
-  --color-shadow-color: var(--shadow-color);
   --color-destructive-foreground: var(--destructive-foreground);
 }
 

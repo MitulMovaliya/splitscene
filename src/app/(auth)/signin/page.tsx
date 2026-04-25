@@ -26,9 +26,12 @@ type SigninValues = z.infer<typeof signinSchema>;
 export default function Page() {
   const searchParams = useSearchParams();
   const nextPath = searchParams.get("next");
+  const normalizedNextPath = nextPath?.replace(/\\+/g, "/").trim() ?? "";
   const callbackURL =
-    nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
-      ? nextPath
+    normalizedNextPath.startsWith("/") &&
+    !normalizedNextPath.startsWith("//") &&
+    !normalizedNextPath.slice(1).includes(":")
+      ? normalizedNextPath
       : "/";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +52,7 @@ export default function Page() {
 
     try {
       const response = (await authClient.signIn.email({
-        email: values.email.trim(),
+        email: values.email,
         password: values.password,
         callbackURL,
       })) as { error?: { message?: string }; url?: string };

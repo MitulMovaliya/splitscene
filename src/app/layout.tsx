@@ -39,11 +39,7 @@ export default function RootLayout({
       <body className="h-full w-full bg-[#4f4f4f] font-sans">
         <div className="flex h-dvh w-full items-start justify-center">
           <div className="relative flex h-dvh w-full max-w-(--max-width) flex-col bg-background shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_8px_40px_rgba(0,0,0,0.12)]">
-            {/* overflow-hidden hatao upar se */}
-            <main className="flex-1 overflow-y-auto">
-              {/* overflow-x-hidden aur -webkit-overflow-scrolling:touch dono hatao */}
-              {children}
-            </main>
+            <main className="flex-1 overflow-y-auto">{children}</main>
           </div>
         </div>
       </body>

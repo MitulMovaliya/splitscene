@@ -74,6 +74,12 @@ export default function Page() {
 
       form.reset();
       setSuccess("Password updated successfully. You can sign in now.");
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : undefined;
+      form.setError("root", {
+        type: "server",
+        message: message || "Unable to reset password.",
+      });
     } finally {
       setIsSubmitting(false);
     }

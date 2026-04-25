@@ -31,45 +31,55 @@ export async function proxy(request: NextRequest) {
   const isPublic = isPublicRoute(pathname);
   const emailVerified = session?.user?.emailVerified ?? false;
 
-  // Block unauthenticated access to verify-email.
   if (!isAuthenticated && isVerificationPage) {
     const redirectUrl = new URL("/signin", request.url);
     redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect unauthenticated users to signin (unless public route)
   if (!isAuthenticated && !isPublic) {
     const redirectUrl = new URL("/signin", request.url);
-    redirectUrl.searchParams.set("next", pathname);
+    redirectUrl.searchParams.set("next", pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Keep verify-email query email aligned with the authenticated user's email.
   if (isAuthenticated && isVerificationPage && session?.user?.email) {
     const queryEmail = request.nextUrl.searchParams.get("email");
     if (queryEmail !== session.user.email) {
       const redirectUrl = new URL("/verify-email", request.url);
       redirectUrl.searchParams.set("email", session.user.email);
+      if (request.nextUrl.searchParams.has("next")) {
+        redirectUrl.searchParams.set(
+          "next",
+          request.nextUrl.searchParams.get("next") ?? "/",
+        );
+      }
       return NextResponse.redirect(redirectUrl);
     }
   }
 
-  // Enforce email verification: if signed in but email not verified, redirect to verify-email
   if (isAuthenticated && !emailVerified && !isPublic && !isVerificationPage) {
     const redirectUrl = new URL("/verify-email", request.url);
     if (session?.user?.email) {
       redirectUrl.searchParams.set("email", session.user.email);
     }
+    redirectUrl.searchParams.set("next", pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect verified users away from verify-email.
   if (isAuthenticated && emailVerified && isVerificationPage) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const nextPath = request.nextUrl.searchParams.get("next") ?? "/";
+    const normalizedNextPath = nextPath.replace(/\\+/g, "/").trim();
+    const safeNextPath =
+      normalizedNextPath.startsWith("/") &&
+      !normalizedNextPath.startsWith("//") &&
+      !normalizedNextPath.slice(1).includes(":")
+        ? normalizedNextPath
+        : "/";
+
+    return NextResponse.redirect(new URL(safeNextPath, request.url));
   }
 
-  // Redirect authenticated users away from auth pages (except verify-email)
   if (
     isAuthenticated &&
     publicRoutes.includes(pathname) &&

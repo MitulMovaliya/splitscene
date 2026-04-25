@@ -35,6 +35,7 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromParams = searchParams.get("email") ?? "";
+  const nextPath = searchParams.get("next") ?? "/";
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
@@ -75,6 +76,15 @@ export default function Page() {
     }
   };
 
+  const handleValidatedSendOtp = async () => {
+    const isEmailValid = await form.trigger("email");
+    if (!isEmailValid) {
+      return;
+    }
+
+    await handleSendOtp(form.getValues("email"));
+  };
+
   const handleSubmit = async (values: VerifyEmailValues) => {
     setIsSubmitting(true);
     setSuccess("");
@@ -97,7 +107,15 @@ export default function Page() {
 
       setSuccess("Email verified successfully!");
       setTimeout(() => {
-        router.push("/");
+        const normalizedNextPath = nextPath.replace(/\\+/g, "/").trim();
+        const safeNextPath =
+          normalizedNextPath.startsWith("/") &&
+          !normalizedNextPath.startsWith("//") &&
+          !normalizedNextPath.slice(1).includes(":")
+            ? normalizedNextPath
+            : "/";
+
+        router.push(safeNextPath);
       }, 1500);
     } finally {
       setIsSubmitting(false);
@@ -175,7 +193,7 @@ export default function Page() {
                   <Button
                     className="w-full"
                     disabled={isSubmitting}
-                    onClick={() => handleSendOtp(form.getValues("email"))}
+                    onClick={() => void handleValidatedSendOtp()}
                     type="button"
                   >
                     {isSubmitting ? "Sending..." : "Send verification code"}
@@ -239,7 +257,7 @@ export default function Page() {
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => handleSendOtp(form.getValues("email"))}
+                    onClick={() => void handleValidatedSendOtp()}
                     disabled={isSubmitting}
                     type="button"
                   >

@@ -51,8 +51,8 @@ export default function Page() {
 
     try {
       const response = await authClient.signUp.email({
-        name: values.name.trim(),
-        email: values.email.trim(),
+        name: values.name,
+        email: values.email,
         password: values.password,
         callbackURL: "/",
       });
@@ -76,7 +76,7 @@ export default function Page() {
 
   const submitForm = form.handleSubmit(handleSubmit);
 
-  const handleFormSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void submitForm();
   };
