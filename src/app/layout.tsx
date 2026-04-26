@@ -32,23 +32,14 @@ export default function RootLayout({
 }>) {
   return (
     <html
+      suppressHydrationWarning
       lang="en"
       className={`dark ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-        <script
-          async
-          crossOrigin="anonymous"
-          src="https://tweakcn.com/live-preview.min.js"
-        />
-      </head>
-
-      <body className="h-full w-full bg-[#E8E6F0] font-sans">
+      <body className="h-full w-full bg-[#4f4f4f] font-sans">
         <div className="flex h-dvh w-full items-start justify-center">
-          <div className="relative flex h-dvh w-full max-w-(--max-width) flex-col overflow-hidden bg-background shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_8px_40px_rgba(0,0,0,0.12)]">
-            <main className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] p-2">
-              {children}
-            </main>
+          <div className="relative flex h-dvh w-full max-w-(--max-width) flex-col bg-background shadow-[0_0_0_1px_rgba(0,0,0,0.06),0_8px_40px_rgba(0,0,0,0.12)]">
+            <main className="flex-1 overflow-y-auto">{children}</main>
           </div>
         </div>
       </body>
